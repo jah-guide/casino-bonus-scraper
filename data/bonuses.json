@@ -1,0 +1,63 @@
+{
+  "generated_at": "2026-10-14T10:14:29.021535+00:00",
+  "candidate": "Bohlokoa Machaha",
+  "source": {
+    "name": "LCB.org exclusive casino bonuses",
+    "list_url": "https://lcb.org/bonuses/exclusive",
+    "why": "Public comparison/listing site with static HTML bonus tables, per-bonus terms on casino pages, and robots.txt allows crawling."
+  },
+  "robots": {
+    "robots_url": "https://lcb.org/robots.txt",
+    "source_url": "https://lcb.org/bonuses/exclusive",
+    "user_agent": "CasinoBonusScreeningBot/1.0 (+https://github.com; educational screening task)",
+    "fetched_at": "2026-10-14T10:14:21.675745+00:00",
+    "can_fetch_source": true,
+    "saved_to": "data/robots_lcb_org.txt"
+  },
+  "llm": {
+    "ran": true,
+    "provider": "groq",
+    "model": "openai/gpt-oss-120b",
+    "env_vars": [
+      "LLM_API_KEY",
+      "OPENAI_API_KEY",
+      "LLM_PROVIDER",
+      "LLM_MODEL",
+      "LLM_BASE_URL"
+    ],
+    "groq_default_base_url": "https://api.groq.com/openai/v1",
+    "groq_default_model": "openai/gpt-oss-120b"
+  },
+  "casinos": [
+    {
+      "casino_name": "Sunny Spins",
+      "source_url": "https://lcb.org/casinos/sunny-spins-casino#bonus-item-23698",
+      "wr_short_scraped": "40x(b+d)",
+      "raw_terms_excerpt": "222% up to $500 40x(b+d) The bonus is valid every Sunday between 12:00 am and 11:59 pm EST and can be redeemed once per week during the promotion time frame. The bonus is valid until 31st October, 2026. All players coming from LCB - US OK! 222% up to $500 Deposit Bonus. How to claim the bonus: New players need to sign up from our LINK and redeem the bonus code at the casino cashier. Minimum deposit: $20. Allowed Games: Slots, Keno and Scratch Cards. Max Bet: $5. Max Cashout: No. Offer Valid unti",
+      "welcome_bonus": "222% up to $500",
+      "wagering_requirement_multiplier": 40,
+      "minimum_deposit": "$20",
+      "extraction": "llm"
+    },
+    {
+      "casino_name": "Everygame Classic",
+      "source_url": "https://lcb.org/casinos/everygame-classic-casino#bonus-item-23670",
+      "wr_short_scraped": "30x(b+d)",
+      "raw_terms_excerpt": "200% up to $200 + 50 Spins 30x(b+d) T&C apply. 18+ This offer is not available for players residing in Ontario. New Customer Offer. 19+. Play Responsibly. All Players - USA OK! Amount: 200% Up To $200 + 50 Free Spins on Boys of Santa Carla. How to claim the bonus: New players need to sign up through our LINK, laim the code in the cashier and make at least a minimum deposit. Existing players need to claim the code in the cashier and make at least a minimum deposit. The bonus will be credited imme",
+      "welcome_bonus": "200% up to $200 + 50 Spins",
+      "wagering_requirement_multiplier": 30,
+      "minimum_deposit": "$30",
+      "extraction": "llm"
+    },
+    {
+      "casino_name": "Everygame",
+      "source_url": "https://lcb.org/casinos/everygame-casino#bonus-item-23669",
+      "wr_short_scraped": "30x(b+d)",
+      "raw_terms_excerpt": "200% up to $2000 + 100 Spins 30x(b+d) T&C apply. 18+. This offer is not available for players residing in Ontario. New Customer Offer. 19+. Play Responsibly. USA OK! Amount: 200% Up To $2000 + 100 Free Spins on Treasure Sparks. How to claim the bonus: New players need to sign up through our LINK, claim the code in the cashier and make at least a minimum deposit. Existing players need to claim the code in the cashier and make at least a minimum deposit. The bonus will be credited immediately and ",
+      "welcome_bonus": "200% up to $2000 + 100 Spins",
+      "wagering_requirement_multiplier": 30,
+      "minimum_deposit": "$20",
+      "extraction": "llm"
+    }
+  ]
+}

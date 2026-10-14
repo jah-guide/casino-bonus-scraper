@@ -1,0 +1,48 @@
+User-agent: *
+Allow: /
+Disallow: /*/favorite/*
+Disallow: /search/*
+Disallow: /onlinecasinobonusforum/personal_messages/*
+Disallow: /personal_messages/*
+Disallow: /onlinecasinobonusforum/online-members/*
+Disallow: /users/*
+Disallow: /url*
+Disallow: /landurl/*
+Disallow: /profile/*
+Disallow: /casinos/overlays_warnings
+Disallow: /onlinecasinobonusforum/members-only-exclusive-board
+Disallow: /onlinecasinobonusforum/*/*/msg*
+Disallow: /poker-rooms/*
+Disallow: /otherurl/*
+Disallow: /onlinecasinobonusforum/poker-bonuses/*
+Disallow: /onlinecasinobonusforum/spam-board/*
+Disallow: /surl/*
+Disallow: /bonusurl/*
+Disallow: /admin/*
+Disallow: /bingo-reviews/*
+Disallow: /onlinecasinobonusforum/bingo/*
+Disallow: /onlinecasinobonusforum/bingo-promotions/*
+Disallow: /games/*?*
+Disallow: /casinos/software/*?*
+Disallow: /complaints/form*?*
+Disallow: /jackpots?*
+Disallow: /news?*
+Allow: /news?page=
+Disallow: /articles?*
+Allow: /articles?page=
+Disallow: /banking-comparison?*
+Allow: /banking-comparison?page=
+Disallow: /ask-mission?*
+Allow: /ask-mission?page=
+Crawl-delay: 30
+Sitemap: https://lcb.org/sitemap/index
+Host: https://lcb.org
+
+User-agent: Linguee Bot
+Disallow: /
+
+User-agent: magpie-crawler
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /

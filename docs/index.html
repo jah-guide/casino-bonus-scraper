@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Casino welcome bonuses</title>
+    <style>
+      :root {
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        line-height: 1.45;
+        color: #111;
+        background: #f6f7f9;
+      }
+      body {
+        margin: 0 auto;
+        padding: 1rem 1rem 2rem;
+        max-width: 52rem;
+      }
+      h1 {
+        font-size: 1.35rem;
+        margin: 0 0 0.25rem;
+      }
+      .meta {
+        font-size: 0.875rem;
+        color: #444;
+        margin-bottom: 1rem;
+      }
+      .error {
+        background: #fdecea;
+        border: 1px solid #f5c2c0;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        border-bottom: 1px solid #e8eaed;
+        padding: 0.65rem 0.5rem;
+        vertical-align: top;
+        text-align: left;
+      }
+      th {
+        background: #eef1f6;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      a {
+        color: #0b57d0;
+        word-break: break-all;
+      }
+      @media (max-width: 640px) {
+        table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+          display: block;
+        }
+        thead {
+          display: none;
+        }
+        tr {
+          border-bottom: 1px solid #e8eaed;
+          padding: 0.5rem 0;
+        }
+        td {
+          border: none;
+          padding: 0.35rem 0.75rem;
+        }
+        td::before {
+          content: attr(data-label);
+          display: block;
+          font-size: 0.72rem;
+          text-transform: uppercase;
+          color: #666;
+          margin-bottom: 0.15rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Casino welcome bonuses</h1>
+    <p class="meta" id="meta">Loading…</p>
+    <div id="error" class="error" hidden></div>
+    <table id="table" hidden>
+      <thead>
+        <tr>
+          <th>Casino</th>
+          <th>Welcome bonus</th>
+          <th>Wagering (×)</th>
+          <th>Min deposit</th>
+          <th>Source</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <script>
+      const fmt = (v) => (v === null || v === undefined || v === "" ? "—" : v);
+
+      async function load() {
+        const meta = document.getElementById("meta");
+        const err = document.getElementById("error");
+        const table = document.getElementById("table");
+        const tbody = document.getElementById("tbody");
+
+        try {
+          const res = await fetch("data/bonuses.json", { cache: "no-store" });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const data = await res.json();
+
+          const src = data.source?.list_url || "";
+          const llm = data.llm?.ran ? "LLM extraction ran" : "LLM not run (see README)";
+          meta.textContent = [
+            data.source?.name || "Bonus data",
+            src ? "· " + src : "",
+            "· " + llm,
+          ]
+            .filter(Boolean)
+            .join(" ");
+
+          tbody.replaceChildren();
+          for (const c of data.casinos || []) {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td data-label="Casino">${c.casino_name || "—"}</td>
+              <td data-label="Welcome bonus">${fmt(c.welcome_bonus)}</td>
+              <td data-label="Wagering">${fmt(c.wagering_requirement_multiplier)}</td>
+              <td data-label="Min deposit">${fmt(c.minimum_deposit)}</td>
+              <td data-label="Source"><a href="${c.source_url}" rel="noopener noreferrer">View terms</a></td>
+            `;
+            tbody.appendChild(tr);
+          }
+          table.hidden = false;
+        } catch (e) {
+          err.hidden = false;
+          err.textContent =
+            "Could not load data/bonuses.json. Run python scrape.py and scripts/build_docs.py first.";
+          meta.textContent = "";
+          console.error(e);
+        }
+      }
+
+      load();
+    </script>
+  </body>
+</html>

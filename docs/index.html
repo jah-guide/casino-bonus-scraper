@@ -1,160 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Casino welcome bonuses</title>
-    <style>
-      :root {
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-        line-height: 1.45;
-        color: #111;
-        background: #f6f7f9;
-      }
-      body {
-        margin: 0 auto;
-        padding: 1rem 1rem 2rem;
-        max-width: 52rem;
-      }
-      h1 {
-        font-size: 1.35rem;
-        margin: 0 0 0.25rem;
-      }
-      .meta {
-        font-size: 0.875rem;
-        color: #444;
-        margin-bottom: 1rem;
-      }
-      .error {
-        background: #fdecea;
-        border: 1px solid #f5c2c0;
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        font-size: 0.9rem;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #fff;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        font-size: 0.92rem;
-      }
-      th,
-      td {
-        border-bottom: 1px solid #e8eaed;
-        padding: 0.65rem 0.5rem;
-        vertical-align: top;
-        text-align: left;
-      }
-      th {
-        background: #eef1f6;
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
-      }
-      tr:last-child td {
-        border-bottom: none;
-      }
-      a {
-        color: #0b57d0;
-        word-break: break-all;
-      }
-      @media (max-width: 640px) {
-        table,
-        thead,
-        tbody,
-        th,
-        td,
-        tr {
-          display: block;
-        }
-        thead {
-          display: none;
-        }
-        tr {
-          border-bottom: 1px solid #e8eaed;
-          padding: 0.5rem 0;
-        }
-        td {
-          border: none;
-          padding: 0.35rem 0.75rem;
-        }
-        td::before {
-          content: attr(data-label);
-          display: block;
-          font-size: 0.72rem;
-          text-transform: uppercase;
-          color: #666;
-          margin-bottom: 0.15rem;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Casino welcome bonuses</h1>
-    <p class="meta" id="meta">Loading…</p>
-    <div id="error" class="error" hidden></div>
-    <table id="table" hidden>
-      <thead>
-        <tr>
-          <th>Casino</th>
-          <th>Welcome bonus</th>
-          <th>Wagering (×)</th>
-          <th>Min deposit</th>
-          <th>Source</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    <script>
-      const fmt = (v) => (v === null || v === undefined || v === "" ? "—" : v);
-
-      async function load() {
-        const meta = document.getElementById("meta");
-        const err = document.getElementById("error");
-        const table = document.getElementById("table");
-        const tbody = document.getElementById("tbody");
-
-        try {
-          const res = await fetch("data/bonuses.json", { cache: "no-store" });
-          if (!res.ok) throw new Error("HTTP " + res.status);
-          const data = await res.json();
-
-          const src = data.source?.list_url || "";
-          const llm = data.llm?.ran ? "LLM extraction ran" : "LLM not run (see README)";
-          meta.textContent = [
-            data.source?.name || "Bonus data",
-            src ? "· " + src : "",
-            "· " + llm,
-          ]
-            .filter(Boolean)
-            .join(" ");
-
-          tbody.replaceChildren();
-          for (const c of data.casinos || []) {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td data-label="Casino">${c.casino_name || "—"}</td>
-              <td data-label="Welcome bonus">${fmt(c.welcome_bonus)}</td>
-              <td data-label="Wagering">${fmt(c.wagering_requirement_multiplier)}</td>
-              <td data-label="Min deposit">${fmt(c.minimum_deposit)}</td>
-              <td data-label="Source"><a href="${c.source_url}" rel="noopener noreferrer">View terms</a></td>
-            `;
-            tbody.appendChild(tr);
-          }
-          table.hidden = false;
-        } catch (e) {
-          err.hidden = false;
-          err.textContent =
-            "Could not load data/bonuses.json. Run python scrape.py and scripts/build_docs.py first.";
-          meta.textContent = "";
-          console.error(e);
-        }
-      }
-
-      load();
-    </script>
-  </body>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bonus Radar · Casino welcome bonus tracker</title>
+<meta name="description" content="Live casino welcome bonuses scraped from LCB.org and structured with an LLM. Screening task by Bohlokoa Machaha." />
+<meta name="theme-color" content="#07090f" />
+<style>
+:root{--bg:#07090f;--panel:#0f1420;--panel2:#141b2b;--line:#222b3f;--txt:#e9edf5;--mut:#9aa6bd;--gold:#f5c451;--mint:#3ee6a8;--vio:#8b7bff;--r:16px;
+font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--txt);background:var(--bg);line-height:1.5}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(900px 500px at 85% -10%,rgba(139,123,255,.18),transparent 60%),radial-gradient(800px 500px at -10% 10%,rgba(62,230,168,.10),transparent 60%),var(--bg)}
+a{color:var(--mint)}a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header.top{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.logo{display:flex;white-space:nowrap;gap:10px;align-items:center;font-weight:800;letter-spacing:.02em}
+.logo i{width:28px;height:28px;border-radius:8px;background:conic-gradient(from 200deg,var(--gold),var(--mint),var(--vio),var(--gold));box-shadow:0 0 24px rgba(245,196,81,.35)}
+.live{font-size:.8rem;color:var(--mut);display:flex;gap:8px;align-items:center;border:1px solid var(--line);padding:6px 12px;border-radius:999px;background:rgba(15,20,32,.7)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 0 rgba(62,230,168,.6);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(62,230,168,0)}100%{box-shadow:0 0 0 0 rgba(62,230,168,0)}}
+.hero{padding:40px 0 28px}
+.eyebrow{color:var(--gold);font-weight:700;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase}
+h1{font-size:clamp(2rem,5.5vw,3.6rem);line-height:1.05;margin:10px 0 14px;letter-spacing:-.02em}
+h1 span{background:linear-gradient(90deg,var(--gold),#ffe6a3 40%,var(--mint));-webkit-background-clip:text;background-clip:text;color:transparent}
+.pitch{color:var(--mut);max-width:640px;font-size:1.05rem;margin:0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:28px}
+.stat{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
+.stat::after{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:var(--c,var(--gold))}
+.stat b{display:block;font-size:1.9rem;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stat small{color:var(--mut);font-size:.8rem}
+.stat em{display:block;font-style:normal;font-size:.78rem;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:34px 0 16px}
+.controls h2{margin:0;font-size:1.25rem}
+.tools{display:flex;gap:10px;flex-wrap:wrap}
+input[type=search]{background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:10px 14px;min-width:220px;font:inherit}
+.seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{background:none;border:0;color:var(--mut);font:inherit;font-size:.85rem;padding:7px 12px;border-radius:9px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--panel2);color:var(--txt);box-shadow:inset 0 0 0 1px var(--line)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:14px;opacity:0;transform:translateY(10px);animation:in .5s ease forwards;transition:border-color .2s,transform .2s}
+.card:hover{border-color:#3a4766;transform:translateY(-3px)}
+@keyframes in{to{opacity:1;transform:none}}
+.card h3{margin:0;font-size:1.15rem}
+.badges{display:flex;gap:6px;flex-wrap:wrap;min-height:22px}
+.badge{font-size:.7rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid}
+.b-match{color:var(--gold);border-color:rgba(245,196,81,.4);background:rgba(245,196,81,.08)}
+.b-wr{color:var(--mint);border-color:rgba(62,230,168,.4);background:rgba(62,230,168,.08)}
+.b-dep{color:#b9b0ff;border-color:rgba(139,123,255,.45);background:rgba(139,123,255,.1)}
+.offer{font-size:1.45rem;font-weight:800;letter-spacing:-.01em}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kv>div{background:rgba(7,9,15,.5);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kv small{display:block;color:var(--mut);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em}
+.kv b{font-size:1.15rem;font-variant-numeric:tabular-nums}
+.bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--mint),var(--gold))}
+details{color:var(--mut);font-size:.85rem}summary{cursor:pointer;color:var(--txt)}
+details p{margin:8px 0 0;max-height:140px;overflow:auto}
+.card a.src{margin-top:auto;font-size:.9rem;font-weight:600;text-decoration:none}.card a.src:hover{text-decoration:underline}
+.state{border:1px dashed var(--line);border-radius:var(--r);padding:28px;text-align:center;color:var(--mut)}
+.err{border-color:#7a2f3a;background:rgba(122,47,58,.15);color:#ffc9d0}
+.skel{height:260px;border-radius:var(--r);background:linear-gradient(90deg,var(--panel) 0,var(--panel2) 50%,var(--panel) 100%);background-size:200% 100%;animation:sh 1.3s infinite}
+@keyframes sh{to{background-position:-200% 0}}
+.how{margin:48px 0 0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;counter-reset:s}
+.step{border:1px solid var(--line);border-radius:var(--r);padding:16px;background:rgba(15,20,32,.6);counter-increment:s}
+.step::before{content:"0" counter(s);color:var(--gold);font-weight:800;font-size:.8rem}
+.step b{display:block;margin:4px 0}.step span{color:var(--mut);font-size:.85rem}
+footer{margin:48px 0 0;padding:22px 0 36px;border-top:1px solid var(--line);color:var(--mut);font-size:.88rem;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:800px){.stats,.how{grid-template-columns:1fr 1fr}}
+@media (max-width:480px){.stat em{white-space:normal}.live{font-size:.72rem}.grid{grid-template-columns:1fr}.tools,input[type=search]{width:100%}.seg{width:100%}.seg button{flex:1}.stat b{font-size:1.5rem}.hero{padding-top:20px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.card{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><div class="logo"><i aria-hidden="true"></i>Bonus Radar</div><div class="live"><span class="dot" aria-hidden="true"></span><span id="updated">Loading data…</span></div></header>
+<section class="hero">
+<div class="eyebrow">Casino welcome bonus tracker</div>
+<h1>Real bonus terms, <span>structured by AI.</span></h1>
+<p class="pitch">Offers scraped from LCB.org, free-text terms turned into clean, comparable fields by an LLM, then published here as JSON.</p>
+<div class="stats" id="stats" aria-live="polite">
+<div class="stat"><small>Casinos tracked</small><b>–</b></div><div class="stat" style="--c:var(--gold)"><small>Best match</small><b>–</b></div><div class="stat" style="--c:var(--mint)"><small>Lowest wagering</small><b>–</b></div><div class="stat" style="--c:var(--vio)"><small>Lowest min deposit</small><b>–</b></div>
+</div>
+</section>
+<main>
+<div class="controls"><h2>Welcome offers</h2>
+<div class="tools"><label class="sr" for="q" hidden>Search casinos</label><input id="q" type="search" placeholder="Search casino or bonus…" aria-label="Search casino or bonus" />
+<div class="seg" role="group" aria-label="Sort by"><button data-s="match" aria-pressed="true">Best match</button><button data-s="wr" aria-pressed="false">Wagering</button><button data-s="dep" aria-pressed="false">Min deposit</button></div></div></div>
+<div id="list" class="grid" aria-live="polite"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+</main>
+<section class="how" aria-label="How it works">
+<div class="step"><b>Scrape LCB.org</b><span>Python fetches the listing and each casino's terms, after checking robots.txt.</span></div>
+<div class="step"><b>LLM extraction</b><span id="llm">Groq model turns free-text terms into bonus, wagering and min deposit.</span></div>
+<div class="step"><b>JSON output</b><span>Validated results written to <code>data/bonuses.json</code>.</span></div>
+<div class="step"><b>This page</b><span>Static HTML + vanilla JS renders the JSON. No build step.</span></div>
+</section>
+<footer><span>Built by <b style="color:var(--txt)">Bohlokoa Machaha</b> · screening task</span><span><a href="https://github.com/jah-guide/casino-bonus-scraper">GitHub repo</a> · Data: <a id="srclink" href="https://lcb.org/bonuses/exclusive">LCB.org</a> · 18+ · Play responsibly</span></footer>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pct=b=>{const m=/(\d+(?:\.\d+)?)\s*%/.exec(b||"");return m?+m[1]:null};
+const money=d=>{const m=/(\d+(?:\.\d+)?)/.exec(String(d??""));return m?+m[1]:null};
+const safeUrl=u=>/^https?:\/\//i.test(u||"")?u:null;
+let rows=[],sortKey="match";
+function stat(label,val,sub,c){return `<div class="stat" style="--c:${c}"><small>${label}</small><b>${esc(val)}</b>${sub?`<em>${esc(sub)}</em>`:""}</div>`}
+function minBy(arr,f){return arr.filter(r=>f(r)!=null).reduce((a,r)=>a==null||f(r)<f(a)?r:a,null)}
+function render(){
+  const q=$("#q").value.trim().toLowerCase();
+  const key={match:r=>-(r.match??-1),wr:r=>r.wr??1e9,dep:r=>r.dep??1e9}[sortKey];
+  const list=rows.filter(r=>!q||(r.name+" "+r.bonus).toLowerCase().includes(q)).sort((a,b)=>key(a)-key(b));
+  const maxWr=Math.max(...rows.map(r=>r.wr||0),1);
+  if(!list.length){$("#list").innerHTML=`<div class="state">No casinos match “${esc(q)}”.</div>`;return}
+  $("#list").innerHTML=list.map((r,i)=>`<article class="card" style="animation-delay:${i*80}ms">
+  <div class="badges">${r.badges.map(b=>`<span class="badge ${b[1]}">${b[0]}</span>`).join("")}</div>
+  <h3>${esc(r.name)}</h3><div class="offer">${esc(r.bonus||"—")}</div>
+  <div class="kv"><div><small>Wagering</small><b>${r.wr!=null?esc(r.wr)+"×":"—"}</b>${r.wr!=null?`<div class="bar" aria-hidden="true"><i style="width:${Math.round(100-(r.wr/maxWr)*60)}%"></i></div>`:""}</div>
+  <div><small>Min deposit</small><b>${esc(r.depRaw||"—")}</b></div></div>
+  ${r.raw?`<details><summary>Original terms (excerpt)</summary><p>${esc(r.raw)}…</p></details>`:""}
+  ${r.url?`<a class="src" href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">View terms on LCB.org →</a>`:""}
+  </article>`).join("");
+}
+async function load(){
+  try{
+    const res=await fetch("data/bonuses.json",{cache:"no-store"});
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    const d=await res.json();
+    rows=(d.casinos||[]).map(c=>({name:c.casino_name||"Unknown",bonus:c.welcome_bonus,match:pct(c.welcome_bonus),wr:typeof c.wagering_requirement_multiplier==="number"?c.wagering_requirement_multiplier:null,depRaw:c.minimum_deposit,dep:money(c.minimum_deposit),url:safeUrl(c.source_url),raw:c.raw_terms_excerpt,badges:[]}));
+    const bm=Math.max(...rows.map(r=>r.match??-1)),lw=minBy(rows,r=>r.wr),ld=minBy(rows,r=>r.dep);
+    rows.forEach(r=>{if(r.match!=null&&r.match===bm)r.badges.push(["Best match","b-match"]);if(lw&&r.wr===lw.wr)r.badges.push(["Lowest wagering","b-wr"]);if(ld&&r.dep===ld.dep)r.badges.push(["Lowest min deposit","b-dep"])});
+    const names=f=>rows.filter(f).map(r=>r.name).join(", ");
+    $("#stats").innerHTML=stat("Casinos tracked",rows.length,d.source?.name||"","var(--txt)")+
+      stat("Best match",bm>=0?bm+"%":"—",names(r=>r.match===bm),"var(--gold)")+
+      stat("Lowest wagering",lw?lw.wr+"×":"—",lw?names(r=>r.wr===lw.wr):"","var(--mint)")+
+      stat("Lowest min deposit",ld?ld.depRaw:"—",ld?names(r=>r.dep===ld.dep):"","var(--vio)");
+    if(d.generated_at){const t=new Date(d.generated_at);$("#updated").textContent="Updated "+t.toLocaleString(undefined,{dateStyle:"medium",timeStyle:"short"});}else $("#updated").textContent="Update time unknown";
+    if(d.llm?.ran)$("#llm").textContent=`${d.llm.provider==="groq"?"Groq":d.llm.provider} model ${d.llm.model} turns free-text terms into bonus, wagering and min deposit.`;
+    if(safeUrl(d.source?.list_url))$("#srclink").href=d.source.list_url;
+    render();
+  }catch(e){
+    $("#list").innerHTML=`<div class="state err" role="alert">Couldn't load <code>data/bonuses.json</code>. Run <code>python scrape.py</code> then <code>python scripts/build_docs.py</code>.</div>`;
+    $("#updated").textContent="Data unavailable";console.error(e);
+  }
+}
+$("#q").addEventListener("input",render);
+document.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",()=>{sortKey=b.dataset.s;document.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));render()}));
+load();
+</script>
+</body>
 </html>

@@ -2,9 +2,9 @@
 
 Candidate: **Bohlokoa Machaha**
 
-Small Python scraper plus a static HTML table showing three casino welcome-style bonuses from one public source ([LCB.org exclusive bonuses](https://lcb.org/bonuses/exclusive)).
+Live page: https://jah-guide.github.io/casino-bonus-scraper/
 
-**Live page:** [https://jah-guide.github.io/casino-bonus-scraper/](https://jah-guide.github.io/casino-bonus-scraper/) (GitHub Pages from `/docs` on `main`).
+Small Python scraper plus a static dashboard page (HTML/CSS/vanilla JS, no build step) showing three casino welcome-style bonuses from one public source ([LCB.org exclusive bonuses](https://lcb.org/bonuses/exclusive)).
 
 ## What it does
 

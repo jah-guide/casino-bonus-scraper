@@ -1,103 +1,104 @@
 # Casino bonus scraper (screening task)
 
-Candidate: **Bohlokoa Machaha**
+**Bohlokoa Machaha**
 
-Live page: https://jah-guide.github.io/casino-bonus-scraper/
+## For reviewers
 
-Small Python scraper plus a static dashboard page (HTML/CSS/vanilla JS, no build step) showing three casino welcome-style bonuses from one public source ([LCB.org exclusive bonuses](https://lcb.org/bonuses/exclusive)).
+- **Live page:** https://jah-guide.github.io/casino-bonus-scraper/
+- **One-command run** (after install below): `python3 scrape.py`
+- **Requirement checklist**
+  - [ ] **3 casinos scraped** — `scrape.py` (`CASINO_COUNT = 3`) from [LCB.org exclusive bonuses](https://lcb.org/bonuses/exclusive); robots check in `data/robots_lcb_org.txt` (`can_fetch_source: true` in JSON)
+  - [ ] **Structured JSON** — `data/bonuses.json` (+ copy at `docs/data/bonuses.json` via `scripts/build_docs.py`)
+  - [ ] **LLM extraction (Groq)** — `extract_with_llm()` in `scrape.py`; committed run used `openai/gpt-oss-120b` (`llm` block in JSON)
+  - [ ] **Public, mobile-friendly page** — `docs/index.html` (responsive CSS, no build step; GitHub Pages `/docs`)
+  - [ ] **Production plan (200 casinos / day)** — section below + longer draft in `PRODUCTION_NOTES_DRAFT.md`
+  - [ ] **AI usage** — “How I used AI” section below
 
-## What it does
+![Bonus Radar dashboard screenshot](docs/screenshot.png)
 
-1. Fetches and saves `https://lcb.org/robots.txt` to `data/robots_lcb_org.txt`.
-2. Scrapes three deposit-style offers from the exclusive bonuses list (HTML table).
-3. Loads full free-text terms from each casino’s LCB review page (`#bonus-item-<id>`).
-4. Calls a configurable LLM (OpenAI-compatible API) to turn those terms into structured fields.
-5. Writes `data/bonuses.json` and copies it to `docs/data/bonuses.json` for the web page.
+I built a small Python scraper and a static **Bonus Radar** dashboard that turns three real welcome offers into comparable fields, then publishes them as JSON for GitHub Pages.
 
-## Install
+**Latest extracted output** (`data/bonuses.json`, generated 2026-10-14):
+
+| Casino | Welcome bonus | Wagering | Min deposit |
+|--------|---------------|----------|-------------|
+| Sunny Spins | 222% up to $500 | 40× | $20 |
+| Everygame Classic | 200% up to $200 + 50 Spins | 30× | $30 |
+| Everygame | 200% up to $2000 + 100 Spins | 30× | $20 |
+
+**Source:** [LCB.org exclusive bonuses](https://lcb.org/bonuses/exclusive). I fetch [robots.txt](https://lcb.org/robots.txt) first; the saved copy shows the list URL is allowed to crawl.
+
+**LLM:** Groq OpenAI-compatible API, model `openai/gpt-oss-120b` (see `llm` in `data/bonuses.json`).
+
+## Setup
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+export LLM_API_KEY="gsk_..."   # Groq; or see env table below
 ```
 
 ## Run
 
 ```bash
-python scrape.py
-```
-
-Optional LLM configuration (at least one API key is required for full structured extraction):
-
-| Variable | Purpose |
-|----------|---------|
-| `LLM_API_KEY` | Groq API key (default path when set and `LLM_BASE_URL` is unset) |
-| `OPENAI_API_KEY` | OpenAI key; use with `LLM_PROVIDER=openai`, or alone if `LLM_API_KEY` is not set |
-| `LLM_PROVIDER` | `openai` to force OpenAI when both keys might be present |
-| `LLM_MODEL` | Override model ID (Groq default: `openai/gpt-oss-120b`; OpenAI default: `gpt-4o-mini`) |
-| `LLM_BASE_URL` | Override API base (Groq default: `https://api.groq.com/openai/v1`) |
-
-**Groq (default when `LLM_API_KEY` is set):** the scraper uses Groq’s OpenAI-compatible endpoint and model `openai/gpt-oss-120b`. Groq [retired `llama-3.3-70b-versatile` on 2026-08-16](https://console.groq.com/docs/deprecations); override with `LLM_MODEL` if you use another hosted model.
-
-```bash
-export LLM_API_KEY="gsk_..."
 python3 scrape.py
 ```
 
-**OpenAI:**
-
-```bash
-export LLM_PROVIDER=openai
-export OPENAI_API_KEY="sk-..."
-python3 scrape.py
-```
-
-Exit code `0` when the LLM step runs; `1` when scraping succeeded but no API key was set (JSON still written with headlines only).
-
-Rebuild the static page data only:
+Rebuild only the site copy of the JSON:
 
 ```bash
 python scripts/build_docs.py
 ```
 
-Preview locally:
+Preview the page:
 
 ```bash
 python3 -m http.server 8765 --directory docs
 ```
 
-Open `http://127.0.0.1:8765/`.
+Open http://127.0.0.1:8765/
 
-## Source and robots.txt
+| Variable | Purpose |
+|----------|---------|
+| `LLM_API_KEY` | Groq API key (default when set and `LLM_BASE_URL` is unset) |
+| `OPENAI_API_KEY` | OpenAI; use with `LLM_PROVIDER=openai` |
+| `LLM_PROVIDER` | `openai` to force OpenAI |
+| `LLM_MODEL` | Override model (Groq default: `openai/gpt-oss-120b`) |
+| `LLM_BASE_URL` | Override API base (Groq default: `https://api.groq.com/openai/v1`) |
 
-- **Source:** [https://lcb.org/bonuses/exclusive](https://lcb.org/bonuses/exclusive) — public bonus comparison/listing with static HTML rows and linked terms on casino pages.
-- **robots.txt:** [https://lcb.org/robots.txt](https://lcb.org/robots.txt) — `User-agent: *` with `Allow: /`; the bonuses path is not disallowed. The scraper checks `can_fetch` for the list URL before requesting it. Saved copy: `data/robots_lcb_org.txt`.
+Without an API key the scraper still writes JSON using regex fallbacks on scraped text (`llm.ran: false`); exit code `1` in that case.
 
-No logins, CAPTCHAs, or paywalls are bypassed. Standard `User-Agent` only.
+## What the code does
 
-## LLM step
+1. Saves `https://lcb.org/robots.txt` to `data/robots_lcb_org.txt`.
+2. Scrapes three deposit-style rows from the exclusive list, then loads terms from each casino page.
+3. Calls the LLM for `welcome_bonus`, `wagering_requirement_multiplier`, and `minimum_deposit`.
+4. Writes `data/bonuses.json` and copies it to `docs/data/bonuses.json`.
 
-`extract_with_llm()` in `scrape.py` sends scraped free-text terms to the configured chat model and expects JSON:
+## Production plan (200 casinos, daily)
 
-- `welcome_bonus`
-- `wagering_requirement_multiplier` (number)
-- `minimum_deposit`
+For a daily refresh at scale I would:
 
-If no key is present, the script documents `llm.ran: false` in the JSON and fills wagering/min-deposit using **regex on the scraped terms** (`extraction: regex_fallback_no_llm_key`) — not hand-typed and not LLM output. Re-run with a key for LLM-based extraction.
+- **Schedule:** cron at **04:00 UTC** on a **Hetzner VPS (~€5/month)** or **GCP Cloud Run Jobs** (scale-to-zero).
+- **Data:** **Supabase Postgres** for casinos, scrape runs, and bonus snapshots; **daily backups** plus a **weekly logical export** to object storage.
+- **Site:** **Cloudflare Pages** in front of the static JSON export, with **DNS and HTTPS** on Cloudflare.
+- **Reliability:** fail the job and **alert (email/Slack)** on HTTP block, schema validation failure, or **<95%** of casinos parsed; **hash terms** and send **only changed text** to the LLM.
+- **Cost:** roughly **R200–R800/month** depending on VPS vs managed DB and LLM token use (see `PRODUCTION_NOTES_DRAFT.md` for a fuller breakdown).
 
-## Static hosting (GitHub Pages)
+## How I used AI
 
-1. Push this repo to GitHub.
-2. **Settings → Pages → Build and deployment:** deploy from branch `main`, folder `/docs`.
-3. The site serves `docs/index.html` and `docs/data/bonuses.json`.
+- I built and iterated on this repo with **Cursor AI agents** (scraper, JSON schema, and the Bonus Radar page).
+- My first bonus source returned **N/A**, so I switched to **LCB.org** (static HTML + allowed robots).
+- While validating output I caught a stray **`$20.`** full stop in a minimum-deposit field and fixed the parsing/prompt path.
+- Groq’s earlier default model was **retired**, so I updated the default to **`openai/gpt-oss-120b`**.
+- I checked the final extracted values in `data/bonuses.json` against the source terms on LCB.org by hand.
 
-No build step is required on Pages beyond running `python scrape.py` before commit.
+## Time spent
 
-## Known limitations
+About **1.5 hours**.
 
-- Only three casinos from one list page; not production scale.
-- LCB HTML/layout changes would break selectors.
-- Wagering rules can be ambiguous (e.g. separate WR for free spins vs. deposit match); the LLM prompt asks for a best-effort primary multiplier.
-- Minimum deposit is not on the list table; it comes from casino page terms via LLM parsing.
-- No database, scheduler, or monitoring (see `PRODUCTION_NOTES_DRAFT.md` for a production sketch).
+## Known gaps
+
+- Only **3 casinos** from **one listing page** (screening scope).
+- No **scheduler**, **database**, or **monitoring** in this repo yet—just the scraper, JSON, and static site.

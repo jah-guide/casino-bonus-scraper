@@ -92,6 +92,7 @@ For a daily refresh at scale I would:
 - My first bonus source returned **N/A**, so I switched to **LCB.org** (static HTML + allowed robots).
 - While validating output I caught a stray **`$20.`** full stop in a minimum-deposit field and fixed the parsing/prompt path.
 - Groq’s earlier default model was **retired**, so I updated the default to **`openai/gpt-oss-120b`**.
+- I checked the final extracted values in `data/bonuses.json` against the source terms on LCB.org by hand.
 
 ## Time spent
 

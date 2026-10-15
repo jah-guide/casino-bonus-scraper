@@ -7,12 +7,12 @@
 - **Live page:** https://jah-guide.github.io/casino-bonus-scraper/
 - **One-command run** (after install below): `python3 scrape.py`
 - **Requirement checklist**
-  - [ ] **3 casinos scraped** — `scrape.py` (`CASINO_COUNT = 3`) from [LCB.org exclusive bonuses](https://lcb.org/bonuses/exclusive); robots check in `data/robots_lcb_org.txt` (`can_fetch_source: true` in JSON)
-  - [ ] **Structured JSON** — `data/bonuses.json` (+ copy at `docs/data/bonuses.json` via `scripts/build_docs.py`)
-  - [ ] **LLM extraction (Groq)** — `extract_with_llm()` in `scrape.py`; committed run used `openai/gpt-oss-120b` (`llm` block in JSON)
-  - [ ] **Public, mobile-friendly page** — `docs/index.html` (responsive CSS, no build step; GitHub Pages `/docs`)
-  - [ ] **Production plan (200 casinos / day)** — section below + longer draft in `PRODUCTION_NOTES_DRAFT.md`
-  - [ ] **AI usage** — “How I used AI” section below
+  - [x] **3 casinos scraped** — `scrape.py` (`CASINO_COUNT = 3`) from [LCB.org exclusive bonuses](https://lcb.org/bonuses/exclusive); robots check in `data/robots_lcb_org.txt` (`can_fetch_source: true` in JSON)
+  - [x] **Structured JSON** — `data/bonuses.json` (+ copy at `docs/data/bonuses.json` via `scripts/build_docs.py`)
+  - [x] **LLM extraction (Groq)** — `extract_with_llm()` in `scrape.py`; committed run used `openai/gpt-oss-120b` (`llm` block in JSON)
+  - [x] **Public, mobile-friendly page** — `docs/index.html` (responsive CSS, no build step; GitHub Pages `/docs`)
+  - [x] **Production plan (200 casinos / day)** — section below + longer draft in `PRODUCTION_NOTES_DRAFT.md`
+  - [x] **AI usage** — “How I used AI” section below
 
 ![Bonus Radar dashboard screenshot](docs/screenshot.png)
 
